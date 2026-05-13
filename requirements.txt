@@ -1,0 +1,14 @@
+mediapipe==0.9.3
+numpy
+scipy
+soundfile
+torch
+torchaudio
+speechbrain
+librosa
+opencv-python
+moviepy==1.0.3
+pyworld
+noisereduce
+pystoi
+matplotlib
