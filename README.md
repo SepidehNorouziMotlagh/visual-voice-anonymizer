@@ -10,32 +10,51 @@ A privacy‑preserving pipeline that extracts a target speaker's voice from a no
 4. **Optional denoising** with `noisereduce`.
 5. **Voice anonymization** using the WORLD vocoder (pitch shifting + formant warping).
 
-Designed for resource‑constrained devices and fully offline.
+Designed for resource‑constrained devices and fully offline – see References for related academic work.
 
 ---
 
 ## 📁 Project Structure
-.
-├── my_video.mp4 # Your recorded target video (not committed)
-├── create_mixture.py # Mix target + interferer + noise
-├── download_demo_data.py # Fetches public interferer & generates noise
+
+```
+visual-voice-anonymizer/
+│
+├── my_video.mp4                  # Your recorded target video (not committed)
+│
+├── create_mixture.py             # Mix target + interferer + noise
+├── download_demo_data.py         # Fetches public interferer & generates noise
+│
 ├── src/
-│ ├── lip_scorer.py # Visual lip‑activity estimator
-│ ├── separate_with_lips.py # Lip‑guided speaker extraction
-│ ├── denoise.py # Stationary noise reduction (optional)
-│ ├── anonymize.py # WORLD‑based voice anonymization
-│ └── evaluate.py # STOI intelligibility & spectrograms
+│   ├── lip_scorer.py             # Visual lip‑activity estimator
+│   ├── separate_with_lips.py     # Lip‑guided speaker extraction
+│   ├── denoise.py                # Stationary noise reduction (optional)
+│   ├── anonymize.py              # WORLD‑based voice anonymization
+│   └── evaluate.py               # STOI intelligibility & spectrograms
+│
+├── smoke_test_audio/             # Output folder (generated, not committed)
+│   ├── clean_target.wav
+│   ├── mixture.wav
+│   ├── extracted_target.wav
+│   ├── enhanced_target.wav       # (if denoising is run)
+│   └── anonymized.wav
+│
+├── pretrained_models/            # Local separation model (not committed)
+│   └── sepformer-whamr16k/
+│
+├── face_landmarker.task          # MediaPipe model file (not committed)
 ├── requirements.txt
-├── README.md
-├── spectrograms.png # Generated after evaluation
-└── smoke_test_audio/ # Output folder (generated, not committed)
+├── .gitignore
+├── spectrograms.png              # Generated after evaluation
+└── README.md
+```
+
+---
 
 ## 🧪 Quick Start
 
 ### 1. Prerequisites
 - Python 3.9+
 - Working webcam (to record a short test video)
-- Git (optional, for cloning)
 
 ### 2. Clone & install
 ```bash
@@ -45,25 +64,30 @@ python -m venv venv
 venv\Scripts\activate          # Windows
 source venv/bin/activate       # macOS/Linux
 pip install -r requirements.txt
-3. Download required models & data
-Face landmarker
-Download face_landmarker.task and place it in the project root.
+```
 
-Separation model
-Create pretrained_models/sepformer-whamr16k/ and copy all files from Hugging Face into that folder.
+### 3. Download required models & data
 
-Demo interferer & noise
+- **Face landmarker**  
+  Download [face_landmarker.task](https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task) and place it in the project root.
 
-bash
-python src/download_demo_data.py
-This downloads a random LibriSpeech utterance (interferer.wav) and generates pink noise (noise.wav).
+- **Separation model**  
+  Create `pretrained_models/sepformer-whamr16k/` and copy all files from [Hugging Face](https://huggingface.co/speechbrain/sepformer-whamr16k) into that folder.
 
-4. Prepare your target video
-Record a short (~5 second) video of yourself speaking clearly, looking at the camera.
-Save it as my_video.mp4 in the project root.
+- **Demo interferer & noise**  
+  ```bash
+  python download_demo_data.py
+  ```
+  This downloads a random LibriSpeech utterance (interferer.wav) and generates pink noise (noise.wav).
 
-5. Run the pipeline
-bash
+### 4. Prepare your target video
+
+Record a short (~5 second) video of yourself speaking clearly, looking at the camera.  
+Save it as `my_video.mp4` in the project root.
+
+### 5. Run the pipeline
+
+```bash
 # Generate mixture
 python create_mixture.py
 
@@ -78,26 +102,27 @@ python src/anonymize.py
 
 # Evaluate intelligibility & generate spectrograms
 python src/evaluate.py
-The anonymised speech will be saved in smoke_test_audio/anonymized.wav.
+```
 
-📊 Evaluation Results
-Metric	STOI
-Extracted vs Clean Target	0.527
-Anonymized vs Clean Target	0.449
-STOI > 0.4 indicates good intelligibility. The pipeline correctly selects the target speaker via lip‑activity correlation and alters vocal identity while preserving words.
+The anonymised speech will be saved in `smoke_test_audio/anonymized.wav`.
 
-https://spectrograms.png
+---
 
-🔮 Future Work (Planned for TEEP Internship)
-Replace WORLD vocoder with a neural voice conversion model (e.g., StarGAN‑VC) conditioned on speaker embeddings for more natural anonymization.
+## 📊 Evaluation Results
 
-Deploy the system on a Raspberry Pi for real‑time edge processing.
+| Metric                     | STOI |
+|----------------------------|------|
+| Extracted vs Clean Target  | 0.527|
+| Anonymized vs Clean Target | 0.449|
 
-Extend to mixed‑lingual scenarios, integrating mixed‑lingual ASR techniques.
+*STOI > 0.4 indicates good intelligibility. The pipeline correctly selects the target speaker via lip‑activity correlation and alters vocal identity while preserving words.*
 
-📚 References
-SpeechBrain Sepformer: speechbrain/sepformer-whamr16k
+![Spectrogram comparison](spectrograms.png)
 
-MediaPipe Face Landmarker: Google MediaPipe
+---
 
-WORLD vocoder: mmorise/World
+## 📚 References
+
+- SpeechBrain Sepformer: [speechbrain/sepformer-whamr16k](https://huggingface.co/speechbrain/sepformer-whamr16k)
+- MediaPipe Face Landmarker: [Google MediaPipe](https://developers.google.com/mediapipe/solutions/vision/face_landmarker)
+- WORLD vocoder: [mmorise/World](https://github.com/mmorise/World)
