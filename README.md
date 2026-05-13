@@ -58,7 +58,7 @@ visual-voice-anonymizer/
 
 ### 2. Clone & install
 ```bash
-git clone https://github.com/yourusername/visual-voice-anonymizer.git
+git clone https://github.com/SepidehNorouziMotlagh/visual-voice-anonymizer.git
 cd visual-voice-anonymizer
 python -m venv venv
 venv\Scripts\activate          # Windows
