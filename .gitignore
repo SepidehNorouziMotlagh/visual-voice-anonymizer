@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+
+# Personal media & generated data
+*.mp4
+*.m4a
+*.wav
+smoke_test_audio/
+face_landmarker.task
+
+# Large model files
+pretrained_models/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+Thumbs.db
